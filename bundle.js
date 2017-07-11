@@ -197,10 +197,6 @@ class Game {
   }
 
   randomPosition() {
-    console.log([
-      ((DIM_X - 200) * Math.random()) + 200,
-      ((DIM_Y - 200) * Math.random()) + 200
-    ]);
     return [
       ((DIM_X - 100) * Math.random()) + 50,
       ((DIM_Y - 100) * Math.random()) + 50
@@ -357,6 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
   gameCanvas.height = window.innerHeight - 150;
 
   const ctx = gameCanvas.getContext('2d');
+
   const game = new __WEBPACK_IMPORTED_MODULE_0__lib_game__["a" /* default */]();
   return new __WEBPACK_IMPORTED_MODULE_1__lib_game_view__["a" /* default */](game, ctx).start(gameCanvas);
 });
