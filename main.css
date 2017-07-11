@@ -16,3 +16,27 @@ body {
 .title {
   margin: 8px 0;
 }
+
+i.icon {
+  border: 3px solid black;
+  border-radius: 100%;
+  height: 40px;
+  width: 40px;
+  text-align: center;
+  font-size: 28px;
+  line-height: 40px;
+  color: black;
+  background: white;
+}
+
+i.icon:hover {
+  color: white;
+  background: black;
+}
+
+.social-links {
+  width: 150px;
+  display: flex;
+  justify-content: space-around;
+  margin-top: 7px;
+}
