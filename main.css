@@ -12,7 +12,7 @@ body {
   position: relative;
   border: 3px solid black;
   background: #ececec;
-  opacity: 0.95;
+  opacity: 0.96;
 }
 
 #start-game {
@@ -82,4 +82,30 @@ input:focus {
   font-weight: bold;
   color: black;
   text-align: center;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.keys-control {
+  width: 150px;
+  height: 100px;
+}
+
+.mouse-control {
+  width: 75px;
+  height: 100px;
+}
+
+.controls-title {
+  font-family: "Helvetica";
+  font-size: 25px;
+  font-weight: bold;
+  color: black;
+  text-align: center;
+  margin-top: 35px;
+  text-decoration: underline;
 }
