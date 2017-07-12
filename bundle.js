@@ -344,6 +344,9 @@ class Bullet extends __WEBPACK_IMPORTED_MODULE_1__moving_object__["a" /* default
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_game__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__lib_game_view__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__vendor_keymaster__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__vendor_keymaster___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__vendor_keymaster__);
+
 
 
 
@@ -355,7 +358,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const ctx = gameCanvas.getContext('2d');
 
   const game = new __WEBPACK_IMPORTED_MODULE_0__lib_game__["a" /* default */]();
-  return new __WEBPACK_IMPORTED_MODULE_1__lib_game_view__["a" /* default */](game, ctx).start(gameCanvas);
+
+  document.getElementById('input-player').addEventListener('keyup', e => {
+    if (e.keyCode === 13) {
+      gameCanvas.parentNode.removeChild(document.getElementById('start-game'));
+      return new __WEBPACK_IMPORTED_MODULE_1__lib_game_view__["a" /* default */](game, ctx).start(gameCanvas);
+    }
+  });
 });
 
 

@@ -9,8 +9,17 @@ body {
 }
 
 #game-canvas {
+  position: relative;
   border: 3px solid black;
   background: #e9e9e9;
+}
+
+#start-game {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  margin-top: 15px;
+  z-index: 1;
 }
 
 .title {
@@ -39,4 +48,37 @@ i.icon:hover {
   display: flex;
   justify-content: space-around;
   margin-top: 7px;
+}
+
+.input-title {
+  font-family: "Helvetica";
+  font-size: 30px;
+  font-weight: bold;
+  color: black;
+  text-align: center;
+}
+
+.input-player {
+  width: 350px;
+  height: 40px;
+  border: 5px solid black;
+}
+
+input:focus {
+    outline: none;
+}
+
+#input-player {
+  font-family: "Helvetica";
+  font-weight: bold;
+  font-size: 28px;
+  border: 4px solid black;
+}
+
+.input-instruction {
+  font-family: "Helvetica";
+  font-size: 15px;
+  font-weight: bold;
+  color: black;
+  text-align: center;
 }
