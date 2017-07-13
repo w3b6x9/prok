@@ -215,6 +215,9 @@ class Game {
     if ((firstObject instanceof __WEBPACK_IMPORTED_MODULE_2__bullet__["a" /* default */]) && (secondObject instanceof __WEBPACK_IMPORTED_MODULE_0__square__["a" /* default */])) {
       const centerDist = __WEBPACK_IMPORTED_MODULE_3__util__["c" /* dist */](firstObject.pos, secondObject.pos);
       return centerDist < 27;
+    } else if ((firstObject instanceof __WEBPACK_IMPORTED_MODULE_1__tank__["a" /* default */]) && (secondObject instanceof __WEBPACK_IMPORTED_MODULE_0__square__["a" /* default */])) {
+      const centerDist = __WEBPACK_IMPORTED_MODULE_3__util__["c" /* dist */](firstObject.pos, secondObject.pos);
+      return centerDist < 54;
     }
   }
 
@@ -229,10 +232,22 @@ class Game {
     }
   }
 
+  checkTankSquareCollisions() {
+    for (let i = 0; i < this.tanks.length; i++) {
+      for (let j = 0; j < this.squares.length; j++) {
+        if (this.collidesTogether(this.tanks[i], this.squares[j])) {
+          this.remove(this.squares[j]);
+          this.tanks[i].health -= 1;
+        }
+      }
+    }
+  }
+
   step(delta) {
     this.moveObjects(delta);
     this.checkCollisions();
     this.checkBulletSquareCollisions();
+    this.checkTankSquareCollisions();
     this.bulletRemoval();
   }
 
@@ -256,6 +271,10 @@ class Game {
   isWon() {
     return this.squares.length === 0;
   }
+
+  isLost() {
+    return this.tanks[0].health === 0;
+  }
 }
 /* harmony export (immutable) */ __webpack_exports__["c"] = Game;
 
@@ -266,7 +285,7 @@ const DIM_X = window.innerWidth - 200;
 const DIM_Y = window.innerHeight - 150;
 /* harmony export (immutable) */ __webpack_exports__["b"] = DIM_Y;
 
-const NUM_SQUARES = 15;
+const NUM_SQUARES = 10;
 
 
 /***/ }),
@@ -750,6 +769,7 @@ class Tank extends __WEBPACK_IMPORTED_MODULE_0__moving_object__["a" /* default *
     this.pos = [100, 100];
     this.mousePos = [100, 100];
     this.direction = [0, 0];
+    this.health = 10;
   }
 
   draw(ctx) {
@@ -883,16 +903,26 @@ class GameView {
   }
 
   gameOver(myReq) {
-    if (this.game.isWon()) {
+    if (this.game.isLost()) {
       cancelAnimationFrame(myReq);
-      this.playButton();
+      this.playButton('lost');
+    } else if (this.game.isWon()) {
+      cancelAnimationFrame(myReq);
+      this.playButton('won');
     }
   }
 
-  playButton() {
+  playButton(result) {
     const playButton = document.getElementById('play-btn');
     const endGameNode = document.getElementById('end-game');
     const startGameNode = document.getElementById('start-game');
+    const resultTextNode = document.getElementById('result-text');
+
+    if (result === 'lost') {
+      resultTextNode.innerHTML = 'Sorry, you\'ve lost.';
+    } else if (result === 'won') {
+      resultTextNode.innerHTML = 'Congrats, you\'ve won!';
+    }
 
     playButton.addEventListener('click', () => {
       endGameNode.style['display'] = 'none';

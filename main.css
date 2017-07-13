@@ -139,3 +139,9 @@ input:focus {
     background: black;
     color: white;
 }
+
+#result-text {
+  font-family: "Helvetica";
+  font-size: 35px;
+  font-weight: bold;
+}
