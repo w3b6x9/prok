@@ -183,9 +183,9 @@ class Game {
   reboundWall(object, pos, vel) {
     if (object instanceof __WEBPACK_IMPORTED_MODULE_1__tank__["a" /* default */]) {
       if (pos[0] < 20 || pos[1] < 20) {
-        return [0.3, 0.3];
+        return [0.1, 0.1];
       } else if (pos[0] > DIM_X - 20 || pos[1] > DIM_Y - 20) {
-        return [-0.3, -0.3];
+        return [-0.1, -0.1];
       } else {
         return vel;
       }
@@ -266,7 +266,7 @@ const DIM_X = window.innerWidth - 200;
 const DIM_Y = window.innerHeight - 150;
 /* harmony export (immutable) */ __webpack_exports__["b"] = DIM_Y;
 
-const NUM_SQUARES = 1;
+const NUM_SQUARES = 15;
 
 
 /***/ }),
@@ -798,8 +798,17 @@ class Tank extends __WEBPACK_IMPORTED_MODULE_0__moving_object__["a" /* default *
   }
 
   power(direction) {
-    this.vel[0] += direction[0];
-    this.vel[1] += direction[1];
+    if (Math.abs(this.vel[0]) < 2) {
+      this.vel[0] += direction[0];
+    }
+
+    if (Math.abs(this.vel[1]) < 2) {
+      this.vel[1] += direction[1];
+    }
+  }
+
+  stop() {
+    this.vel = [0, 0];
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Tank;
@@ -812,10 +821,7 @@ class Tank extends __WEBPACK_IMPORTED_MODULE_0__moving_object__["a" /* default *
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__game__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__vendor_keymaster__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__vendor_keymaster___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__vendor_keymaster__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__prok__ = __webpack_require__(3);
-
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__prok__ = __webpack_require__(3);
 
 
 
@@ -834,7 +840,17 @@ class GameView {
     Object.keys(MOVES).forEach(k => {
       let move = MOVES[k];
 
-      __WEBPACK_IMPORTED_MODULE_1__vendor_keymaster___default.a(k, () => { tank.power(move); });
+      document.addEventListener('keydown', e => {
+        if (e.keyCode === Number(k)) {
+          tank.power(move);
+        }
+      });
+
+      document.addEventListener('keyup', e => {
+        if (e.keyCode === Number(k)) {
+          tank.stop();
+        }
+      });
     });
   }
 
@@ -892,14 +908,14 @@ class GameView {
 
 
 const MOVES = {
-  'w':     [0, -1],
-  'a':     [-1,  0],
-  's':     [0,  1],
-  'd':     [1,  0],
-  'up':    [0, -1],
-  'left':  [-1, 0],
-  'right': [1,  0],
-  'down':  [0, 1],
+  '87': [0, -2],
+  '65': [-2,  0],
+  '83': [0,  2],
+  '68': [2,  0],
+  '38': [0, -2],
+  '37': [-2, 0],
+  '39': [2,  0],
+  '40': [0, 2],
 };
 
 
