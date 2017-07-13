@@ -882,6 +882,7 @@ class GameView {
       endGameNode.style['display'] = 'none';
       startGameNode.style['display'] = 'flex';
       this.ctx.clearRect(0, 0, __WEBPACK_IMPORTED_MODULE_0__game__["a" /* DIM_X */], __WEBPACK_IMPORTED_MODULE_0__game__["b" /* DIM_Y */]);
+      document.getElementById('input-player').focus();
     });
 
     endGameNode.style['display'] = 'flex';
