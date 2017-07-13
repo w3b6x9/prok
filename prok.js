@@ -9,12 +9,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const ctx = gameCanvas.getContext('2d');
 
-  const game = new Game();
+  startGame(gameCanvas, ctx);
+});
 
+export const startGame = (gameCanvas, ctx) => {
   document.getElementById('input-player').addEventListener('keyup', e => {
     if (e.keyCode === 13) {
-      gameCanvas.parentNode.removeChild(document.getElementById('start-game'));
-      return new GameView(game, ctx).start(gameCanvas);
+      document.getElementById('start-game').style['display'] = 'none';
+      return new GameView(gameCanvas, new Game(), ctx).start(gameCanvas);
     }
   });
-});
+};

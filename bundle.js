@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 4);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -113,47 +113,9 @@ const bulletVel = (deg, length) => {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__util__ = __webpack_require__(0);
-
-
-const NORMAL_FRAME_TIME_DELTA = 1500 / 60;
-
-class MovingObject {
-  constructor(settings) {
-    this.pos = settings.pos;
-    this.vel = settings.vel;
-    this.color = settings.color;
-    this.game = settings.game;
-  }
-
-  move(timeDelta) {
-    const velocityScale = timeDelta / NORMAL_FRAME_TIME_DELTA;
-    this.vel = this.game.reboundWall(this, this.pos, this.vel);
-    const offsetX = this.vel[0] * velocityScale;
-    const offsetY = this.vel[1] * velocityScale;
-    const posOffsetX = this.pos[0] + offsetX;
-    const posOffsetY = this.pos[1] + offsetY;
-
-    this.pos = [posOffsetX, posOffsetY];
-  }
-
-  isCollidedWith(otherObject) {
-    const centerDist = __WEBPACK_IMPORTED_MODULE_0__util__["c" /* dist */](this.pos, otherObject.pos);
-    return centerDist < 30;
-  }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = MovingObject;
-
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__square__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tank__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__bullet__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__square__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tank__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__bullet__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__util__ = __webpack_require__(0);
 
 
@@ -167,6 +129,7 @@ class Game {
     this.bullets = [];
 
     this.addSquares();
+    this.addTank();
   }
 
   add(object) {
@@ -198,8 +161,8 @@ class Game {
 
   randomPosition() {
     return [
-      ((DIM_X - 100) * Math.random()) + 50,
-      ((DIM_Y - 100) * Math.random()) + 50
+      ((DIM_X - 30) * Math.random()),
+      ((DIM_Y - 30) * Math.random())
     ];
   }
 
@@ -289,13 +252,59 @@ class Game {
       }
     }
   }
+
+  isWon() {
+    return this.squares.length === 0;
+  }
 }
-/* harmony export (immutable) */ __webpack_exports__["a"] = Game;
+/* harmony export (immutable) */ __webpack_exports__["c"] = Game;
 
 
 const DIM_X = window.innerWidth - 200;
+/* harmony export (immutable) */ __webpack_exports__["a"] = DIM_X;
+
 const DIM_Y = window.innerHeight - 150;
-const NUM_SQUARES = 15;
+/* harmony export (immutable) */ __webpack_exports__["b"] = DIM_Y;
+
+const NUM_SQUARES = 1;
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__util__ = __webpack_require__(0);
+
+
+const NORMAL_FRAME_TIME_DELTA = 1000 / 60;
+
+class MovingObject {
+  constructor(settings) {
+    this.pos = settings.pos;
+    this.vel = settings.vel;
+    this.color = settings.color;
+    this.game = settings.game;
+  }
+
+  move(timeDelta) {
+    const velocityScale = 1 || timeDelta / NORMAL_FRAME_TIME_DELTA;
+    this.vel = this.game.reboundWall(this, this.pos, this.vel);
+    const offsetX = this.vel[0] * velocityScale;
+    const offsetY = this.vel[1] * velocityScale;
+    const posOffsetX = (this.pos[0] + offsetX);
+    const posOffsetY = (this.pos[1] + offsetY);
+
+    this.pos = [posOffsetX, posOffsetY];
+  }
+
+  isCollidedWith(otherObject) {
+    const centerDist = __WEBPACK_IMPORTED_MODULE_0__util__["c" /* dist */](this.pos, otherObject.pos);
+    return centerDist < 30;
+  }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = MovingObject;
+
 
 
 /***/ }),
@@ -303,8 +312,44 @@ const NUM_SQUARES = 15;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_game__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__lib_game_view__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__vendor_keymaster__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__vendor_keymaster___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__vendor_keymaster__);
+
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const gameCanvas = document.getElementById('game-canvas');
+  gameCanvas.width = window.innerWidth - 200;
+  gameCanvas.height = window.innerHeight - 150;
+
+  const ctx = gameCanvas.getContext('2d');
+
+  startGame(gameCanvas, ctx);
+});
+
+const startGame = (gameCanvas, ctx) => {
+  document.getElementById('input-player').addEventListener('keyup', e => {
+    if (e.keyCode === 13) {
+      document.getElementById('start-game').style['display'] = 'none';
+      return new __WEBPACK_IMPORTED_MODULE_1__lib_game_view__["a" /* default */](gameCanvas, new __WEBPACK_IMPORTED_MODULE_0__lib_game__["c" /* default */](), ctx).start(gameCanvas);
+    }
+  });
+};
+/* harmony export (immutable) */ __webpack_exports__["startGame"] = startGame;
+
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__util__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__moving_object__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__moving_object__ = __webpack_require__(2);
 
 
 
@@ -337,232 +382,7 @@ class Bullet extends __WEBPACK_IMPORTED_MODULE_1__moving_object__["a" /* default
 
 
 /***/ }),
-/* 4 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_game__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__lib_game_view__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__vendor_keymaster__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__vendor_keymaster___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__vendor_keymaster__);
-
-
-
-
-document.addEventListener('DOMContentLoaded', () => {
-  const gameCanvas = document.getElementById('game-canvas');
-  gameCanvas.width = window.innerWidth - 200;
-  gameCanvas.height = window.innerHeight - 150;
-
-  const ctx = gameCanvas.getContext('2d');
-
-  const game = new __WEBPACK_IMPORTED_MODULE_0__lib_game__["a" /* default */]();
-
-  document.getElementById('input-player').addEventListener('keyup', e => {
-    if (e.keyCode === 13) {
-      gameCanvas.parentNode.removeChild(document.getElementById('start-game'));
-      return new __WEBPACK_IMPORTED_MODULE_1__lib_game_view__["a" /* default */](game, ctx).start(gameCanvas);
-    }
-  });
-});
-
-
-/***/ }),
 /* 5 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__util__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__moving_object__ = __webpack_require__(1);
-
-
-
-const DEFAULTS = {
-  COLOR: '#FFE95E',
-  SPEED: 1,
-  LENGTH: 10,
-};
-
-class Square extends __WEBPACK_IMPORTED_MODULE_1__moving_object__["a" /* default */] {
-  constructor(settings = {}) {
-    settings.color = DEFAULTS.COLOR;
-    settings.pos = settings.pos || settings.game.randomPosition();
-    settings.vel = settings.vel || __WEBPACK_IMPORTED_MODULE_0__util__["d" /* randomVec */](DEFAULTS.SPEED);
-    super(settings);
-  }
-
-  draw(ctx) {
-    ctx.beginPath();
-    ctx.rect(this.pos[0], this.pos[1], 28, 28);
-    ctx.fillStyle = this.color;
-    ctx.fill();
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = '#abad19';
-    ctx.stroke();
-  }
-
-  rebound() {
-    this.vel = this.vel.map(el => -el);
-  }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Square;
-
-
-
-/***/ }),
-/* 6 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__moving_object__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__util__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__bullet__ = __webpack_require__(3);
-
-
-
-
-const DEFAULTS = {
-  COLOR: '#0CD7E8',
-  SPEED: 4,
-};
-
-class Tank extends __WEBPACK_IMPORTED_MODULE_0__moving_object__["a" /* default */] {
-  constructor(settings = {}) {
-    settings.pos = settings.pos || [0, 0];
-    settings.vel = settings.vel || [0, 0];
-    super(settings);
-    this.pos = [100, 100];
-    this.mousePos = [100, 100];
-    this.direction = [0, 0];
-  }
-
-  draw(ctx) {
-    const degree = Math.atan2((this.mousePos[1] - 80 - this.pos[1]), (this.mousePos[0] - 80 - this.pos[0]));
-    ctx.save();
-    ctx.beginPath();
-    ctx.translate(this.pos[0], this.pos[1]);
-    ctx.rotate(degree);
-    ctx.fillStyle = '#959595';
-    ctx.rect(0, -8, 40, 15);
-    ctx.fill();
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = '#676764';
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.fillStyle = DEFAULTS.COLOR;
-    ctx.arc(
-      0, 0, 20, 0, 2 * Math.PI, true
-    );
-    ctx.fill();
-    ctx.translate(0, 0);
-    ctx.restore();
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = '#09acb9';
-    ctx.stroke();
-  }
-
-  fireBullet() {
-    const relVel = __WEBPACK_IMPORTED_MODULE_1__util__["e" /* scale */](
-      __WEBPACK_IMPORTED_MODULE_1__util__["b" /* dir */](this.tank.mousePos),
-      5
-    );
-    const degree = Math.atan2((this.tank.mousePos[1] - 80 - this.tank.pos[1]), (this.tank.mousePos[0] - 80 - this.tank.pos[0]));
-    const bulletOrigin = [this.tank.pos[0] + 40 * Math.cos(degree), this.tank.pos[1] + 40 * Math.sin(degree)];
-    const bulletVel = __WEBPACK_IMPORTED_MODULE_1__util__["a" /* bulletVel */](degree, 7);
-    const bullet = new __WEBPACK_IMPORTED_MODULE_2__bullet__["a" /* default */]({
-      originPos: bulletOrigin,
-      pos: bulletOrigin,
-      vel: bulletVel,
-      color: DEFAULTS.COLOR,
-      game: this.game,
-    });
-
-    this.game.add(bullet);
-  }
-
-  power(direction) {
-    this.vel[0] += direction[0];
-    this.vel[1] += direction[1];
-  }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Tank;
-
-
-
-/***/ }),
-/* 7 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__game__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__vendor_keymaster__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__vendor_keymaster___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__vendor_keymaster__);
-
-
-
-class GameView {
-  constructor(game, ctx) {
-    this.ctx = ctx;
-    this.game = game;
-    this.tank = this.game.addTank();
-  }
-
-  bindKeyHandlers() {
-    const tank = this.tank;
-
-    Object.keys(MOVES).forEach(k => {
-      let move = MOVES[k];
-
-      __WEBPACK_IMPORTED_MODULE_1__vendor_keymaster___default.a(k, () => { tank.power(move); });
-    });
-  }
-
-  bindMousePos(gameCanvas) {
-    window.addEventListener('mousemove', this.getMousePos.bind(this), false);
-    gameCanvas.addEventListener('click', this.tank.fireBullet.bind(this));
-  }
-
-  getMousePos(e) {
-    this.tank.mousePos = [e.clientX, e.clientY];
-  }
-
-  start(gameCanvas) {
-    this.bindKeyHandlers();
-    this.bindMousePos(gameCanvas);
-    this.lastTime = 0;
-
-    requestAnimationFrame(this.animate.bind(this));
-  }
-
-  animate(time) {
-    const timeDelta = time - this.lastTime;
-
-    this.game.step(timeDelta);
-    this.game.draw(this.ctx);
-    this.lastTime = time;
-
-    requestAnimationFrame(this.animate.bind(this));
-  }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = GameView;
-
-
-const MOVES = {
-  'w':     [0, -1],
-  'a':     [-1,  0],
-  's':     [0,  1],
-  'd':     [1,  0],
-  'up':    [0, -1],
-  'left':  [-1, 0],
-  'right': [1,  0],
-  'down':  [0, 1],
-};
-
-
-/***/ }),
-/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //     keymaster.js
@@ -861,6 +681,225 @@ const MOVES = {
   if(true) module.exports = assignKey;
 
 })(this);
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__util__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__moving_object__ = __webpack_require__(2);
+
+
+
+const DEFAULTS = {
+  COLOR: '#FFE95E',
+  SPEED: 1,
+  LENGTH: 10,
+};
+
+class Square extends __WEBPACK_IMPORTED_MODULE_1__moving_object__["a" /* default */] {
+  constructor(settings = {}) {
+    settings.color = DEFAULTS.COLOR;
+    settings.pos = settings.pos || settings.game.randomPosition();
+    settings.vel = settings.vel || __WEBPACK_IMPORTED_MODULE_0__util__["d" /* randomVec */](DEFAULTS.SPEED);
+    super(settings);
+  }
+
+  draw(ctx) {
+    ctx.beginPath();
+    ctx.rect(this.pos[0], this.pos[1], 28, 28);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#abad19';
+    ctx.stroke();
+  }
+
+  rebound() {
+    this.vel = this.vel.map(el => -el);
+  }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Square;
+
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__moving_object__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__util__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__bullet__ = __webpack_require__(4);
+
+
+
+
+const DEFAULTS = {
+  COLOR: '#0CD7E8',
+  SPEED: 4,
+};
+
+class Tank extends __WEBPACK_IMPORTED_MODULE_0__moving_object__["a" /* default */] {
+  constructor(settings = {}) {
+    settings.pos = settings.pos || [0, 0];
+    settings.vel = settings.vel || [0, 0];
+    super(settings);
+    this.pos = [100, 100];
+    this.mousePos = [100, 100];
+    this.direction = [0, 0];
+  }
+
+  draw(ctx) {
+    const degree = Math.atan2((this.mousePos[1] - 80 - this.pos[1]), (this.mousePos[0] - 80 - this.pos[0]));
+    ctx.save();
+    ctx.beginPath();
+    ctx.translate(this.pos[0], this.pos[1]);
+    ctx.rotate(degree);
+    ctx.fillStyle = '#959595';
+    ctx.rect(0, -8, 40, 15);
+    ctx.fill();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#676764';
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.fillStyle = DEFAULTS.COLOR;
+    ctx.arc(
+      0, 0, 20, 0, 2 * Math.PI, true
+    );
+    ctx.fill();
+    ctx.translate(0, 0);
+    ctx.restore();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#09acb9';
+    ctx.stroke();
+  }
+
+  fireBullet() {
+    const relVel = __WEBPACK_IMPORTED_MODULE_1__util__["e" /* scale */](
+      __WEBPACK_IMPORTED_MODULE_1__util__["b" /* dir */](this.tank.mousePos),
+      5
+    );
+    const degree = Math.atan2((this.tank.mousePos[1] - 80 - this.tank.pos[1]), (this.tank.mousePos[0] - 80 - this.tank.pos[0]));
+    const bulletOrigin = [this.tank.pos[0] + 40 * Math.cos(degree), this.tank.pos[1] + 40 * Math.sin(degree)];
+    const bulletVel = __WEBPACK_IMPORTED_MODULE_1__util__["a" /* bulletVel */](degree, 7);
+    const bullet = new __WEBPACK_IMPORTED_MODULE_2__bullet__["a" /* default */]({
+      originPos: bulletOrigin,
+      pos: bulletOrigin,
+      vel: bulletVel,
+      color: DEFAULTS.COLOR,
+      game: this.game,
+    });
+
+    this.game.add(bullet);
+  }
+
+  power(direction) {
+    this.vel[0] += direction[0];
+    this.vel[1] += direction[1];
+  }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Tank;
+
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__game__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__vendor_keymaster__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__vendor_keymaster___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__vendor_keymaster__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__prok__ = __webpack_require__(3);
+
+
+
+
+
+class GameView {
+  constructor(gameCanvas, game, ctx) {
+    this.ctx = ctx;
+    this.game = game;
+    this.gameCanvas = gameCanvas;
+    this.tank = this.game.tanks[0];
+  }
+
+  bindKeyHandlers() {
+    const tank = this.tank;
+
+    Object.keys(MOVES).forEach(k => {
+      let move = MOVES[k];
+
+      __WEBPACK_IMPORTED_MODULE_1__vendor_keymaster___default.a(k, () => { tank.power(move); });
+    });
+  }
+
+  bindMousePos(gameCanvas) {
+    window.addEventListener('mousemove', this.getMousePos.bind(this), false);
+    gameCanvas.addEventListener('click', this.tank.fireBullet.bind(this));
+  }
+
+  getMousePos(e) {
+    this.tank.mousePos = [e.clientX, e.clientY];
+  }
+
+  start(gameCanvas) {
+    this.bindKeyHandlers();
+    this.bindMousePos(gameCanvas);
+    this.lastTime = 0;
+
+    requestAnimationFrame(this.animate.bind(this));
+  }
+
+  animate(time) {
+    const timeDelta = time - this.lastTime;
+
+    this.game.step(timeDelta);
+    this.game.draw(this.ctx);
+    this.lastTime = time;
+
+    const myReq = requestAnimationFrame(this.animate.bind(this));
+    this.gameOver(myReq);
+  }
+
+  gameOver(myReq) {
+    if (this.game.isWon()) {
+      cancelAnimationFrame(myReq);
+      this.playButton();
+    }
+  }
+
+  playButton() {
+    const playButton = document.getElementById('play-btn');
+    const endGameNode = document.getElementById('end-game');
+    const startGameNode = document.getElementById('start-game');
+
+    playButton.addEventListener('click', () => {
+      endGameNode.style['display'] = 'none';
+      startGameNode.style['display'] = 'flex';
+      this.ctx.clearRect(0, 0, __WEBPACK_IMPORTED_MODULE_0__game__["a" /* DIM_X */], __WEBPACK_IMPORTED_MODULE_0__game__["b" /* DIM_Y */]);
+    });
+
+    endGameNode.style['display'] = 'flex';
+  }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = GameView;
+
+
+const MOVES = {
+  'w':     [0, -1],
+  'a':     [-1,  0],
+  's':     [0,  1],
+  'd':     [1,  0],
+  'up':    [0, -1],
+  'left':  [-1, 0],
+  'right': [1,  0],
+  'down':  [0, 1],
+};
 
 
 /***/ })

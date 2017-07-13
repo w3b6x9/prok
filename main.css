@@ -109,3 +109,33 @@ input:focus {
   margin-top: 35px;
   text-decoration: underline;
 }
+
+#end-game {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  margin-top: 15px;
+  z-index: 1;
+  font-family: "Helvetica";
+  font-size: 35px;
+  font-weight: bold;
+}
+
+#end-game button {
+  font-family: "Helvetica";
+  font-size: 25px;
+  font-weight: bold;
+  background: white;
+  border: 3px solid black;
+  width: 175px;
+  height: 65px;
+  margin-top: 15px;
+  cursor: pointer;
+}
+
+#end-game button:hover {
+    background: black;
+    color: white;
+}
