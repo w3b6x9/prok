@@ -225,8 +225,11 @@ class Game {
     for (let i = 0; i < this.bullets.length; i++) {
       for (let j = 0; j < this.squares.length; j++) {
         if (this.collidesTogether(this.bullets[i], this.squares[j])) {
-          this.remove(this.squares[j]);
           this.remove(this.bullets[i]);
+          this.squares[j].health -= 1;
+          if (this.squares[j].health === 0) {
+            this.remove(this.squares[j]);
+          }
         }
       }
     }
@@ -422,6 +425,7 @@ class Square extends __WEBPACK_IMPORTED_MODULE_1__moving_object__["a" /* default
     settings.pos = settings.pos || settings.game.randomPosition();
     settings.vel = settings.vel || __WEBPACK_IMPORTED_MODULE_0__util__["d" /* randomVec */](DEFAULTS.SPEED);
     super(settings);
+    this.health = 2;
   }
 
   draw(ctx) {
@@ -432,6 +436,21 @@ class Square extends __WEBPACK_IMPORTED_MODULE_1__moving_object__["a" /* default
     ctx.lineWidth = 3;
     ctx.strokeStyle = '#abad19';
     ctx.stroke();
+
+    if (this.health < 2) {
+      const percent = this.health / 2;
+      const posX = this.pos[0] - 2;
+      const posY = this.pos[1] + 35;
+      const width = 30;
+      const height = 5;
+
+      ctx.fillStyle = '#676764';
+      ctx.fillRect(posX, posY, width + 3, height + 3);
+      ctx.stroke();
+
+      ctx.fillStyle = '#76FF03';
+      ctx.fillRect(posX + 1.5, posY + 1.5, width * percent, height);
+    }
   }
 
   rebound() {
