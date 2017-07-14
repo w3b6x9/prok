@@ -532,11 +532,11 @@ class Tank extends __WEBPACK_IMPORTED_MODULE_0__moving_object__["a" /* default *
 
   fireBullet() {
     const relVel = __WEBPACK_IMPORTED_MODULE_1__util__["e" /* scale */](
-      __WEBPACK_IMPORTED_MODULE_1__util__["b" /* dir */](this.tank.mousePos),
+      __WEBPACK_IMPORTED_MODULE_1__util__["b" /* dir */](this.mousePos),
       5
     );
-    const degree = Math.atan2((this.tank.mousePos[1] - 80 - this.tank.pos[1]), (this.tank.mousePos[0] - 80 - this.tank.pos[0]));
-    const bulletOrigin = [this.tank.pos[0] + 40 * Math.cos(degree), this.tank.pos[1] + 40 * Math.sin(degree)];
+    const degree = Math.atan2((this.mousePos[1] - 80 - this.pos[1]), (this.mousePos[0] - 80 - this.pos[0]));
+    const bulletOrigin = [this.pos[0] + 40 * Math.cos(degree), this.pos[1] + 40 * Math.sin(degree)];
     const bulletVel = __WEBPACK_IMPORTED_MODULE_1__util__["a" /* bulletVel */](degree, 4);
     const bullet = new __WEBPACK_IMPORTED_MODULE_2__bullet__["a" /* default */]({
       originPos: bulletOrigin,
@@ -604,11 +604,17 @@ class GameView {
         }
       });
     });
+
+    document.addEventListener('keypress', e => {
+      if (e.keyCode === 32) {
+        tank.fireBullet();
+      }
+    });
   }
 
   bindMousePos(gameCanvas) {
     window.addEventListener('mousemove', this.getMousePos.bind(this), false);
-    gameCanvas.addEventListener('click', this.tank.fireBullet.bind(this));
+    gameCanvas.addEventListener('click', this.tank.fireBullet.bind(this.tank));
   }
 
   getMousePos(e) {
