@@ -796,6 +796,21 @@ class Tank extends __WEBPACK_IMPORTED_MODULE_0__moving_object__["a" /* default *
     ctx.lineWidth = 3;
     ctx.strokeStyle = '#09acb9';
     ctx.stroke();
+
+    if (this.health < 10) {
+      const percent = this.health / 10;
+      const posX = this.pos[0] - 22;
+      const posY = this.pos[1] + 32;
+      const width = 45;
+      const height = 5;
+
+      ctx.fillStyle = '#676764';
+      ctx.fillRect(posX, posY, width + 3, height + 3);
+      ctx.stroke();
+
+      ctx.fillStyle = '#76FF03';
+      ctx.fillRect(posX + 1.5, posY + 1.5, width * percent, height);
+    }
   }
 
   fireBullet() {
