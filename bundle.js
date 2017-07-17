@@ -116,7 +116,9 @@ const bulletVel = (deg, length) => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__square__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tank__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__bullet__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__util__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__triangle__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__util__ = __webpack_require__(0);
+
 
 
 
@@ -127,8 +129,10 @@ class Game {
     this.squares = [];
     this.tanks = [];
     this.bullets = [];
+    this.triangles = [];
 
     this.addSquares();
+    this.addTriangles();
     this.addTank();
   }
 
@@ -139,12 +143,20 @@ class Game {
       this.tanks.push(object);
     } else if (object instanceof __WEBPACK_IMPORTED_MODULE_2__bullet__["a" /* default */]) {
       this.bullets.push(object);
+    } else if (object instanceof __WEBPACK_IMPORTED_MODULE_3__triangle__["a" /* default */]) {
+      this.triangles.push(object);
     }
   }
 
   addSquares() {
     for (let i = 0; i < NUM_SQUARES; i++) {
       this.add(new __WEBPACK_IMPORTED_MODULE_0__square__["a" /* default */]({ game: this }));
+    }
+  }
+
+  addTriangles() {
+    for (let i = 0; i < NUM_TRIANGLES; i++) {
+      this.add(new __WEBPACK_IMPORTED_MODULE_3__triangle__["a" /* default */]({ game: this }));
     }
   }
 
@@ -156,7 +168,7 @@ class Game {
   }
 
   allObjects() {
-    return [].concat(this.tanks, this.squares, this.bullets);
+    return [].concat(this.tanks, this.squares, this.bullets, this.triangles);
   }
 
   randomPosition() {
@@ -213,10 +225,10 @@ class Game {
 
   collidesTogether(firstObject, secondObject) {
     if ((firstObject instanceof __WEBPACK_IMPORTED_MODULE_2__bullet__["a" /* default */]) && (secondObject instanceof __WEBPACK_IMPORTED_MODULE_0__square__["a" /* default */])) {
-      const centerDist = __WEBPACK_IMPORTED_MODULE_3__util__["c" /* dist */](firstObject.pos, secondObject.pos);
+      const centerDist = __WEBPACK_IMPORTED_MODULE_4__util__["c" /* dist */](firstObject.pos, secondObject.pos);
       return centerDist < 27;
     } else if ((firstObject instanceof __WEBPACK_IMPORTED_MODULE_1__tank__["a" /* default */]) && (secondObject instanceof __WEBPACK_IMPORTED_MODULE_0__square__["a" /* default */])) {
-      const centerDist = __WEBPACK_IMPORTED_MODULE_3__util__["c" /* dist */](firstObject.pos, secondObject.pos);
+      const centerDist = __WEBPACK_IMPORTED_MODULE_4__util__["c" /* dist */](firstObject.pos, secondObject.pos);
       return centerDist < 54;
     }
   }
@@ -264,7 +276,7 @@ class Game {
 
   bulletRemoval() {
     for (let i = 0; i < this.bullets.length; i++) {
-      const distanceTravelled = __WEBPACK_IMPORTED_MODULE_3__util__["c" /* dist */](this.bullets[i].pos, this.bullets[i].originPos);
+      const distanceTravelled = __WEBPACK_IMPORTED_MODULE_4__util__["c" /* dist */](this.bullets[i].pos, this.bullets[i].originPos);
       if (distanceTravelled > 350) {
         this.remove(this.bullets[i]);
       }
@@ -288,7 +300,8 @@ const DIM_X = window.innerWidth - 200;
 const DIM_Y = window.innerHeight - 150;
 /* harmony export (immutable) */ __webpack_exports__["b"] = DIM_Y;
 
-const NUM_SQUARES = 10;
+const NUM_SQUARES = 8;
+const NUM_TRIANGLES = 5;
 
 
 /***/ }),
@@ -987,6 +1000,48 @@ const MOVES = {
   if(true) module.exports = assignKey;
 
 })(this);
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__util__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__moving_object__ = __webpack_require__(2);
+
+
+
+const DEFAULTS = {
+  COLOR: '#F44336',
+  SPEED: 0.15,
+  LENGTH: 10,
+};
+
+class Triangle extends __WEBPACK_IMPORTED_MODULE_1__moving_object__["a" /* default */] {
+  constructor(settings = {}) {
+    settings.color = DEFAULTS.COLOR;
+    settings.pos = settings.game.randomPosition();
+    settings.vel = settings.vel || __WEBPACK_IMPORTED_MODULE_0__util__["d" /* randomVec */](DEFAULTS.SPEED);
+    super(settings);
+    this.health = 4;
+  }
+
+  draw(ctx) {
+    // ctx.beginPath();
+    // ctx.moveTo(60, 50);
+    // ctx.lineTo(100, 75);
+    // ctx.lineTo(100, 25);
+    // ctx.fillStyle = DEFAULTS.COLOR;
+    // ctx.fill();
+  }
+
+  rebound() {
+    this.vel = this.vel.map(el => -el);
+  }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Triangle;
+
 
 
 /***/ })
