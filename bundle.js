@@ -550,17 +550,34 @@ class Tank extends __WEBPACK_IMPORTED_MODULE_0__moving_object__["a" /* default *
   }
 
   power(direction) {
-    if (Math.abs(this.vel[0]) < 2) {
+    if (Math.abs(this.vel[0]) <= 2) {
       this.vel[0] += direction[0];
     }
 
-    if (Math.abs(this.vel[1]) < 2) {
+    if (Math.abs(this.vel[1]) <= 2) {
       this.vel[1] += direction[1];
+    }
+
+    if (this.vel[0] > 2) {
+      this.vel[0] = 2;
+    }
+
+    if (this.vel[0] < -2) {
+      this.vel[0] = -2;
+    }
+
+    if (this.vel[1] > 2) {
+      this.vel[1] = 2;
+    }
+
+    if (this.vel[1] < -2) {
+      this.vel[1] = -2;
     }
   }
 
-  stop() {
-    this.vel = [0, 0];
+  stop(direction) {
+    this.vel[0] -= direction[0] * .95;
+    this.vel[1] -= direction[1] * .95;
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Tank;
@@ -600,7 +617,7 @@ class GameView {
 
       document.addEventListener('keyup', e => {
         if (e.keyCode === Number(k)) {
-          tank.stop();
+          tank.stop(move);
         }
       });
     });
