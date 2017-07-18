@@ -12,6 +12,20 @@ document.addEventListener('DOMContentLoaded', () => {
   startGame(gameCanvas, ctx);
 });
 
+
+const MOVES = {
+  '87': [0, -1],
+  '65': [-1,  0],
+  '83': [0,  1],
+  '68': [1,  0],
+  '38': [0, -1],
+  '37': [-1, 0],
+  '39': [1,  0],
+  '40': [0, 1],
+};
+
+
+
 export const startGame = (gameCanvas, ctx) => {
   document.getElementById('input-player').addEventListener('keyup', e => {
     if (e.keyCode === 13) {
