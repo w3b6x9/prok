@@ -539,6 +539,9 @@ class Tank extends __WEBPACK_IMPORTED_MODULE_0__moving_object__["a" /* default *
     this.health = 10;
     this.background = settings.background;
     this.border = settings.border;
+
+    this.power = this.power.bind(this);
+    this.stop = this.stop.bind(this);
   }
 
   draw(ctx) {
@@ -743,6 +746,12 @@ class GameView {
   }
 
   animate(time) {
+    for (var key in this.keys) {
+      if (this.keys[key].down) {
+        this.keys[key].action();
+      }
+    }
+
     const timeDelta = time - this.lastTime;
 
     this.replaceSquare(1);
