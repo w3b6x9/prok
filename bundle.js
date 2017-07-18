@@ -129,7 +129,7 @@ class Game {
     this.bullets = [];
 
     this.addSquares();
-    this.addTank();
+    this.addTanks();
   }
 
   add(object) {
@@ -142,17 +142,43 @@ class Game {
     }
   }
 
-  addSquares() {
-    for (let i = 0; i < NUM_SQUARES; i++) {
+  addSquares(n = NUM_SQUARES) {
+    for (let i = 0; i < n; i++) {
       this.add(new __WEBPACK_IMPORTED_MODULE_0__square__["a" /* default */]({ game: this }));
     }
   }
 
-  addTank() {
-    const tank = new __WEBPACK_IMPORTED_MODULE_1__tank__["a" /* default */]({ game: this });
+  addTanks() {
+    const tank = new __WEBPACK_IMPORTED_MODULE_1__tank__["a" /* default */]({
+      game: this,
+      background: '#0CD7E8',
+      border: '#09acb9',
+    });
     this.add(tank);
 
-    return tank;
+    const compTank1 = new __WEBPACK_IMPORTED_MODULE_1__tank__["a" /* default */]({
+      game: this,
+      background: '#ff3232',
+      border: '#cc0000',
+      pos: [DIM_X - 100, 100],
+    });
+    this.add(compTank1);
+
+    const compTank2 = new __WEBPACK_IMPORTED_MODULE_1__tank__["a" /* default */]({
+      game: this,
+      background: '#ff3232',
+      border: '#cc0000',
+      pos: [DIM_X - 100, DIM_Y - 100],
+    });
+    this.add(compTank2);
+
+    const compTank3 = new __WEBPACK_IMPORTED_MODULE_1__tank__["a" /* default */]({
+      game: this,
+      background: '#ff3232',
+      border: '#cc0000',
+      pos: [100, DIM_Y - 100],
+    });
+    this.add(compTank3);
   }
 
   allObjects() {
@@ -218,6 +244,9 @@ class Game {
     } else if ((firstObject instanceof __WEBPACK_IMPORTED_MODULE_1__tank__["a" /* default */]) && (secondObject instanceof __WEBPACK_IMPORTED_MODULE_0__square__["a" /* default */])) {
       const centerDist = __WEBPACK_IMPORTED_MODULE_3__util__["c" /* dist */](firstObject.pos, secondObject.pos);
       return centerDist < 54;
+    } else if ((firstObject instanceof __WEBPACK_IMPORTED_MODULE_2__bullet__["a" /* default */]) && (secondObject instanceof __WEBPACK_IMPORTED_MODULE_1__tank__["a" /* default */])) {
+      const centerDist = __WEBPACK_IMPORTED_MODULE_3__util__["c" /* dist */](firstObject.pos, secondObject.pos);
+      return centerDist < 27;
     }
   }
 
@@ -246,12 +275,28 @@ class Game {
     }
   }
 
+  checkBulletTankCollisions() {
+    for (let i = 0; i < this.tanks.length; i++) {
+      for (let j = 0; j < this.bullets.length; j++) {
+        if (this.collidesTogether(this.bullets[j], this.tanks[i])) {
+          this.remove(this.bullets[j]);
+          this.tanks[i].health -= 2;
+
+          if (this.tanks[i].health <= 0) {
+            this.remove(this.tanks[i]);
+          }
+        }
+      }
+    }
+  }
+
   step(delta) {
     this.moveObjects(delta);
     this.checkCollisions();
     this.checkBulletSquareCollisions();
     this.checkTankSquareCollisions();
     this.bulletRemoval();
+    this.checkBulletTankCollisions();
   }
 
   remove(object) {
@@ -259,6 +304,8 @@ class Game {
       this.squares.splice(this.squares.indexOf(object), 1);
     } else if (object instanceof __WEBPACK_IMPORTED_MODULE_2__bullet__["a" /* default */]) {
       this.bullets.splice(this.bullets.indexOf(object), 1);
+    } else if (object instanceof __WEBPACK_IMPORTED_MODULE_1__tank__["a" /* default */]) {
+      this.tanks.splice(this.tanks.indexOf(object), 1);
     }
   }
 
@@ -279,7 +326,7 @@ class Game {
     return this.tanks[0].health === 0;
   }
 }
-/* harmony export (immutable) */ __webpack_exports__["c"] = Game;
+/* harmony export (immutable) */ __webpack_exports__["d"] = Game;
 
 
 const DIM_X = window.innerWidth - 200;
@@ -288,7 +335,9 @@ const DIM_X = window.innerWidth - 200;
 const DIM_Y = window.innerHeight - 150;
 /* harmony export (immutable) */ __webpack_exports__["b"] = DIM_Y;
 
-const NUM_SQUARES = 10;
+const NUM_SQUARES = 15;
+/* harmony export (immutable) */ __webpack_exports__["c"] = NUM_SQUARES;
+
 
 
 /***/ }),
@@ -357,7 +406,7 @@ const startGame = (gameCanvas, ctx) => {
   document.getElementById('input-player').addEventListener('keyup', e => {
     if (e.keyCode === 13) {
       document.getElementById('start-game').style['display'] = 'none';
-      return new __WEBPACK_IMPORTED_MODULE_1__lib_game_view__["a" /* default */](gameCanvas, new __WEBPACK_IMPORTED_MODULE_0__lib_game__["c" /* default */](), ctx).start(gameCanvas);
+      return new __WEBPACK_IMPORTED_MODULE_1__lib_game_view__["a" /* default */](gameCanvas, new __WEBPACK_IMPORTED_MODULE_0__lib_game__["d" /* default */](), ctx).start(gameCanvas);
     }
   });
 };
@@ -376,15 +425,17 @@ const startGame = (gameCanvas, ctx) => {
 
 
 const DEFAULTS = {
-  COLOR: '#0CD7E8',
   SPEED: 7,
 };
 
 class Bullet extends __WEBPACK_IMPORTED_MODULE_1__moving_object__["a" /* default */] {
   constructor(settings) {
-    settings.color = DEFAULTS.COLOR;
+    settings.background = settings.background;
+    settings.border = settings.border;
     super(settings);
     this.originPos = settings.originPos;
+    this.background = settings.background;
+    this.border = settings.border;
   }
 
   draw(ctx) {
@@ -392,10 +443,10 @@ class Bullet extends __WEBPACK_IMPORTED_MODULE_1__moving_object__["a" /* default
     ctx.arc(
       this.pos[0], this.pos[1], 7, 0, 2 * Math.PI, true
     );
-    ctx.fillStyle = DEFAULTS.COLOR;
+    ctx.fillStyle = this.background;
     ctx.fill();
     ctx.lineWidth = 3;
-    ctx.strokeStyle = '#09acb9';
+    ctx.strokeStyle = this.border;
     ctx.stroke();
   }
 }
@@ -474,19 +525,20 @@ class Square extends __WEBPACK_IMPORTED_MODULE_1__moving_object__["a" /* default
 
 
 const DEFAULTS = {
-  COLOR: '#0CD7E8',
   SPEED: 4,
 };
 
 class Tank extends __WEBPACK_IMPORTED_MODULE_0__moving_object__["a" /* default */] {
   constructor(settings = {}) {
-    settings.pos = settings.pos || [0, 0];
+    settings.pos = settings.pos || [100, 100];
     settings.vel = settings.vel || [0, 0];
     super(settings);
-    this.pos = [100, 100];
+    this.pos = settings.pos;
     this.mousePos = [100, 100];
     this.direction = [0, 0];
     this.health = 10;
+    this.background = settings.background;
+    this.border = settings.border;
   }
 
   draw(ctx) {
@@ -503,7 +555,7 @@ class Tank extends __WEBPACK_IMPORTED_MODULE_0__moving_object__["a" /* default *
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.fillStyle = DEFAULTS.COLOR;
+    ctx.fillStyle = this.background;
     ctx.arc(
       0, 0, 20, 0, 2 * Math.PI, true
     );
@@ -511,7 +563,7 @@ class Tank extends __WEBPACK_IMPORTED_MODULE_0__moving_object__["a" /* default *
     ctx.translate(0, 0);
     ctx.restore();
     ctx.lineWidth = 3;
-    ctx.strokeStyle = '#09acb9';
+    ctx.strokeStyle = this.border;
     ctx.stroke();
 
     if (this.health < 10) {
@@ -542,7 +594,8 @@ class Tank extends __WEBPACK_IMPORTED_MODULE_0__moving_object__["a" /* default *
       originPos: bulletOrigin,
       pos: bulletOrigin,
       vel: bulletVel,
-      color: DEFAULTS.COLOR,
+      background: this.background,
+      border: this.border,
       game: this.game,
     });
 
@@ -591,6 +644,8 @@ class Tank extends __WEBPACK_IMPORTED_MODULE_0__moving_object__["a" /* default *
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__game__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__prok__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__util__ = __webpack_require__(0);
+
 
 
 
@@ -638,9 +693,50 @@ class GameView {
     this.tank.mousePos = [e.clientX, e.clientY];
   }
 
+  compTanksFire() {
+    const tanks = this.game.tanks;
+
+    for (let i = 1; i < tanks.length; i++) {
+      setInterval(() => {
+        tanks[i].fireBullet();
+      }, (1000 * Math.random() + 500));
+    }
+  }
+
+  compTanksFirePos() {
+    const tanks = this.game.tanks;
+
+    for (let i = 1; i < tanks.length; i++) {
+
+      setInterval(() => {
+        tanks[i].mousePos = [tanks[0].pos[0] + 80, tanks[0].pos[1] + 80];
+      }, 3000);
+    }
+  }
+
+  compTanksMove() {
+    const tanks = this.game.tanks;
+
+    for (let i = 1; i < tanks.length; i++) {
+      const distance = __WEBPACK_IMPORTED_MODULE_2__util__["c" /* dist */](tanks[0].pos, tanks[i].pos);
+      const x = .3 / distance * (tanks[0].pos[0] - tanks[i].pos[0]);
+      const y = .3 / distance * (tanks[0].pos[1] - tanks[i].pos[1]);
+
+      tanks[i].vel = [x, y];
+    }
+  }
+
+
+  replaceSquare() {
+    if (this.game.squares.length !== __WEBPACK_IMPORTED_MODULE_0__game__["c" /* NUM_SQUARES */]) {
+      this.game.addSquares(1);
+    }
+  }
+
   start(gameCanvas) {
     this.bindKeyHandlers();
     this.bindMousePos(gameCanvas);
+    this.compTanksFire();
     this.lastTime = 0;
 
     requestAnimationFrame(this.animate.bind(this));
@@ -649,6 +745,9 @@ class GameView {
   animate(time) {
     const timeDelta = time - this.lastTime;
 
+    this.replaceSquare(1);
+    this.compTanksFirePos();
+    this.compTanksMove();
     this.game.step(timeDelta);
     this.game.draw(this.ctx);
     this.lastTime = time;
