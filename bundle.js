@@ -282,7 +282,7 @@ class Game {
           this.remove(this.bullets[j]);
           this.tanks[i].health -= 2;
 
-          if (this.tanks[i].health <= 0) {
+          if (i !== 0 && this.tanks[i].health <= 0) {
             this.remove(this.tanks[i]);
           }
         }
@@ -320,11 +320,11 @@ class Game {
   }
 
   isWon() {
-    return this.squares.length === 0;
+    return this.tanks.length === 1;
   }
 
   isLost() {
-    return this.tanks[0].health === 0;
+    return this.tanks[0].health <= 0;
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["d"] = Game;
@@ -549,7 +549,7 @@ class Tank extends __WEBPACK_IMPORTED_MODULE_0__moving_object__["a" /* default *
     settings.vel = settings.vel || [0, 0];
     super(settings);
     this.pos = settings.pos;
-    this.mousePos = [100, 100];
+    this.mousePos = [200, 200];
     this.direction = [0, 0];
     this.health = 10;
     this.background = settings.background;
@@ -585,7 +585,12 @@ class Tank extends __WEBPACK_IMPORTED_MODULE_0__moving_object__["a" /* default *
     ctx.stroke();
 
     if (this.health < 10) {
-      const percent = this.health / 10;
+      let percent = this.health / 10;
+
+      if (percent <= 0) {
+        percent = 0;
+      }
+
       const posX = this.pos[0] - 22;
       const posY = this.pos[1] + 32;
       const width = 45;
@@ -621,35 +626,31 @@ class Tank extends __WEBPACK_IMPORTED_MODULE_0__moving_object__["a" /* default *
   }
 
   power(direction) {
-    if (Math.abs(this.vel[0]) <= 4 || Math.abs(this.vel[1] <= 4)) {
+    if (Math.abs(this.vel[0]) <= 1.5 || Math.abs(this.vel[1] <= 1.5)) {
       this.vel[0] += Math.sqrt(Math.pow(direction[0], 2) + Math.pow(this.vel[1], 2)) * direction[0] / 2;
       this.vel[1] += Math.sqrt(Math.pow(direction[1], 2) + Math.pow(this.vel[0], 2)) * direction[1] / 2;
     }
 
-    // if (Math.abs(this.vel[1]) <= 2) {
-    //   this.vel[1] += direction[1];
-    // }
-
-    if (this.vel[0] > 4) {
-      this.vel[0] = 4;
+    if (this.vel[0] > 1.5) {
+      this.vel[0] = 1.5;
     }
 
-    if (this.vel[0] < -4) {
-      this.vel[0] = -4;
+    if (this.vel[0] < -1.5) {
+      this.vel[0] = -1.5;
     }
 
-    if (this.vel[1] > 4) {
-      this.vel[1] = 4;
+    if (this.vel[1] > 1.5) {
+      this.vel[1] = 1.5;
     }
 
-    if (this.vel[1] < -4) {
-      this.vel[1] = -4;
+    if (this.vel[1] < -1.5) {
+      this.vel[1] = -1.5;
     }
   }
 
   stop() {
-    this.vel[0] = this.vel[0] * .99;
-    this.vel[1] = this.vel[1] * .99;
+    this.vel[0] = this.vel[0] * .97;
+    this.vel[1] = this.vel[1] * .97;
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Tank;
@@ -676,19 +677,17 @@ class GameView {
     this.gameCanvas = gameCanvas;
     this.tank = this.game.tanks[0];
     this.keys = {
-    37:{down:false, action:() => this.tank.power([-1, 0])},
-    38:{down:false, action:() => this.tank.power([1, 0])},
-    39:{down:false, action:() => this.tank.power([0, 1])},
-    40:{down:false, action:() => this.tank.power([0, -1])},
+      37:{down:false, action:() => this.tank.power([-1.5, 0])},
+      38:{down:false, action:() => this.tank.power([1.5, 0])},
+      39:{down:false, action:() => this.tank.power([0, 1.5])},
+      40:{down:false, action:() => this.tank.power([0, -1.5])},
 
-    65:{down:false, action:() => this.tank.power([-1, 0])},
-    68:{down:false, action:() => this.tank.power([1, 0])},
-    83:{down:false, action:() => this.tank.power([0, 1])},
-    87:{down:false, action:() => this.tank.power([0, -1])},
-
-};
+      65:{down:false, action:() => this.tank.power([-1.5, 0])},
+      68:{down:false, action:() => this.tank.power([1.5, 0])},
+      83:{down:false, action:() => this.tank.power([0, 1.5])},
+      87:{down:false, action:() => this.tank.power([0, -1.5])},
+    };
   }
-
 
   bindMousePos(gameCanvas) {
     window.addEventListener('mousemove', this.getMousePos.bind(this), false);
@@ -705,7 +704,7 @@ class GameView {
     for (let i = 1; i < tanks.length; i++) {
       setInterval(() => {
         tanks[i].fireBullet();
-      }, (1000 * Math.random() + 500));
+      }, (1000 * Math.random() + 300));
     }
   }
 
@@ -725,8 +724,8 @@ class GameView {
 
     for (let i = 1; i < tanks.length; i++) {
       const distance = __WEBPACK_IMPORTED_MODULE_2__util__["c" /* dist */](tanks[0].pos, tanks[i].pos);
-      const x = .3 / distance * (tanks[0].pos[0] - tanks[i].pos[0]);
-      const y = .3 / distance * (tanks[0].pos[1] - tanks[i].pos[1]);
+      const x = .5 / distance * (tanks[0].pos[0] - tanks[i].pos[0]);
+      const y = .5 / distance * (tanks[0].pos[1] - tanks[i].pos[1]);
 
       tanks[i].vel = [x, y];
     }
@@ -741,23 +740,23 @@ class GameView {
 
   start(gameCanvas) {
     document.addEventListener('keydown', e => {
-      debugger
       if (this.keys[e.keyCode]) {
         this.keys[e.keyCode].down = true ;
       }
-  });
+    });
 
-  document.addEventListener('keyup', e => {
-    if (this.keys[e.keyCode]) {
-      this.keys[e.keyCode].down = false;
-    }
-  });
+    document.addEventListener('keyup', e => {
+      if (this.keys[e.keyCode]) {
+        this.keys[e.keyCode].down = false;
+      }
+    });
 
-  document.addEventListener('keypress', e => {
-    if (e.keyCode === 32) {
-      this.tank.fireBullet();
-    }
-  });
+    document.addEventListener('keypress', e => {
+      if (e.keyCode === 32) {
+        this.tank.fireBullet();
+      }
+    });
+
     this.bindMousePos(gameCanvas);
     this.compTanksFire();
     this.lastTime = 0;
