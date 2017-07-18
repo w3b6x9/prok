@@ -291,6 +291,7 @@ class Game {
   }
 
   step(delta) {
+    this.tanks[0].stop();
     this.moveObjects(delta);
     this.checkCollisions();
     this.checkBulletSquareCollisions();
@@ -401,6 +402,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   startGame(gameCanvas, ctx);
 });
+
+
+const MOVES = {
+  '87': [0, -1],
+  '65': [-1,  0],
+  '83': [0,  1],
+  '68': [1,  0],
+  '38': [0, -1],
+  '37': [-1, 0],
+  '39': [1,  0],
+  '40': [0, 1],
+};
+
+
 
 const startGame = (gameCanvas, ctx) => {
   document.getElementById('input-player').addEventListener('keyup', e => {
@@ -539,6 +554,9 @@ class Tank extends __WEBPACK_IMPORTED_MODULE_0__moving_object__["a" /* default *
     this.health = 10;
     this.background = settings.background;
     this.border = settings.border;
+
+    this.power = this.power.bind(this);
+    this.stop = this.stop.bind(this);
   }
 
   draw(ctx) {
@@ -603,34 +621,35 @@ class Tank extends __WEBPACK_IMPORTED_MODULE_0__moving_object__["a" /* default *
   }
 
   power(direction) {
-    if (Math.abs(this.vel[0]) <= 2) {
-      this.vel[0] += direction[0];
+    if (Math.abs(this.vel[0]) <= 4 || Math.abs(this.vel[1] <= 4)) {
+      this.vel[0] += Math.sqrt(Math.pow(direction[0], 2) + Math.pow(this.vel[1], 2)) * direction[0] / 2;
+      this.vel[1] += Math.sqrt(Math.pow(direction[1], 2) + Math.pow(this.vel[0], 2)) * direction[1] / 2;
     }
 
-    if (Math.abs(this.vel[1]) <= 2) {
-      this.vel[1] += direction[1];
+    // if (Math.abs(this.vel[1]) <= 2) {
+    //   this.vel[1] += direction[1];
+    // }
+
+    if (this.vel[0] > 4) {
+      this.vel[0] = 4;
     }
 
-    if (this.vel[0] > 2) {
-      this.vel[0] = 2;
+    if (this.vel[0] < -4) {
+      this.vel[0] = -4;
     }
 
-    if (this.vel[0] < -2) {
-      this.vel[0] = -2;
+    if (this.vel[1] > 4) {
+      this.vel[1] = 4;
     }
 
-    if (this.vel[1] > 2) {
-      this.vel[1] = 2;
-    }
-
-    if (this.vel[1] < -2) {
-      this.vel[1] = -2;
+    if (this.vel[1] < -4) {
+      this.vel[1] = -4;
     }
   }
 
-  stop(direction) {
-    this.vel[0] -= direction[0] * .95;
-    this.vel[1] -= direction[1] * .95;
+  stop() {
+    this.vel[0] = this.vel[0] * .99;
+    this.vel[1] = this.vel[1] * .99;
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Tank;
@@ -656,33 +675,20 @@ class GameView {
     this.game = game;
     this.gameCanvas = gameCanvas;
     this.tank = this.game.tanks[0];
+    this.keys = {
+    37:{down:false, action:() => this.tank.power([-1, 0])},
+    38:{down:false, action:() => this.tank.power([1, 0])},
+    39:{down:false, action:() => this.tank.power([0, 1])},
+    40:{down:false, action:() => this.tank.power([0, -1])},
+
+    65:{down:false, action:() => this.tank.power([-1, 0])},
+    68:{down:false, action:() => this.tank.power([1, 0])},
+    83:{down:false, action:() => this.tank.power([0, 1])},
+    87:{down:false, action:() => this.tank.power([0, -1])},
+
+};
   }
 
-  bindKeyHandlers() {
-    const tank = this.tank;
-
-    Object.keys(MOVES).forEach(k => {
-      let move = MOVES[k];
-
-      document.addEventListener('keydown', e => {
-        if (e.keyCode === Number(k)) {
-          tank.power(move);
-        }
-      });
-
-      document.addEventListener('keyup', e => {
-        if (e.keyCode === Number(k)) {
-          tank.stop(move);
-        }
-      });
-    });
-
-    document.addEventListener('keypress', e => {
-      if (e.keyCode === 32) {
-        tank.fireBullet();
-      }
-    });
-  }
 
   bindMousePos(gameCanvas) {
     window.addEventListener('mousemove', this.getMousePos.bind(this), false);
@@ -734,7 +740,24 @@ class GameView {
   }
 
   start(gameCanvas) {
-    this.bindKeyHandlers();
+    document.addEventListener('keydown', e => {
+      debugger
+      if (this.keys[e.keyCode]) {
+        this.keys[e.keyCode].down = true ;
+      }
+  });
+
+  document.addEventListener('keyup', e => {
+    if (this.keys[e.keyCode]) {
+      this.keys[e.keyCode].down = false;
+    }
+  });
+
+  document.addEventListener('keypress', e => {
+    if (e.keyCode === 32) {
+      this.tank.fireBullet();
+    }
+  });
     this.bindMousePos(gameCanvas);
     this.compTanksFire();
     this.lastTime = 0;
@@ -743,11 +766,18 @@ class GameView {
   }
 
   animate(time) {
+    for (var key in this.keys) {
+      if (this.keys[key].down) {
+        this.keys[key].action();
+      }
+    }
+
     const timeDelta = time - this.lastTime;
 
     this.replaceSquare(1);
     this.compTanksFirePos();
     this.compTanksMove();
+
     this.game.step(timeDelta);
     this.game.draw(this.ctx);
     this.lastTime = time;
@@ -790,17 +820,6 @@ class GameView {
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = GameView;
 
-
-const MOVES = {
-  '87': [0, -2],
-  '65': [-2,  0],
-  '83': [0,  2],
-  '68': [2,  0],
-  '38': [0, -2],
-  '37': [-2, 0],
-  '39': [2,  0],
-  '40': [0, 2],
-};
 
 
 /***/ }),
