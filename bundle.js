@@ -153,32 +153,29 @@ class Game {
       game: this,
       background: '#0CD7E8',
       border: '#09acb9',
+      pos: MID_POS,
     });
+
     this.add(tank);
 
-    const compTank1 = new __WEBPACK_IMPORTED_MODULE_1__tank__["a" /* default */]({
-      game: this,
-      background: '#ff3232',
-      border: '#cc0000',
-      pos: [DIM_X - 100, 100],
-    });
-    this.add(compTank1);
+    for (let i = 0; i < 4; i++) {
+      this.compTank();
+    }
 
-    const compTank2 = new __WEBPACK_IMPORTED_MODULE_1__tank__["a" /* default */]({
-      game: this,
-      background: '#ff3232',
-      border: '#cc0000',
-      pos: [DIM_X - 100, DIM_Y - 100],
-    });
-    this.add(compTank2);
+    setInterval(() => this.compTank(), 3500);
+  }
 
-    const compTank3 = new __WEBPACK_IMPORTED_MODULE_1__tank__["a" /* default */]({
+  compTank() {
+    const randomPos = this.randomPosition();
+    const compTank = new __WEBPACK_IMPORTED_MODULE_1__tank__["a" /* default */]({
       game: this,
       background: '#ff3232',
       border: '#cc0000',
-      pos: [100, DIM_Y - 100],
+      pos: randomPos,
+      mousePos: MID_POS,
     });
-    this.add(compTank3);
+
+    this.add(compTank);
   }
 
   allObjects() {
@@ -187,8 +184,8 @@ class Game {
 
   randomPosition() {
     return [
-      ((DIM_X - 30) * Math.random()),
-      ((DIM_Y - 30) * Math.random())
+      ((DIM_X - 40) * Math.random()),
+      ((DIM_Y - 40) * Math.random())
     ];
   }
 
@@ -329,14 +326,14 @@ class Game {
 }
 /* harmony export (immutable) */ __webpack_exports__["d"] = Game;
 
-
 const DIM_X = window.innerWidth - 200;
 /* harmony export (immutable) */ __webpack_exports__["a"] = DIM_X;
 
 const DIM_Y = window.innerHeight - 150;
 /* harmony export (immutable) */ __webpack_exports__["b"] = DIM_Y;
 
-const NUM_SQUARES = 15;
+const MID_POS = [DIM_X / 2, DIM_Y / 2];
+const NUM_SQUARES = 20;
 /* harmony export (immutable) */ __webpack_exports__["c"] = NUM_SQUARES;
 
 
@@ -545,11 +542,11 @@ const DEFAULTS = {
 
 class Tank extends __WEBPACK_IMPORTED_MODULE_0__moving_object__["a" /* default */] {
   constructor(settings = {}) {
-    settings.pos = settings.pos || [100, 100];
+    settings.pos = settings.pos;
     settings.vel = settings.vel || [0, 0];
     super(settings);
     this.pos = settings.pos;
-    this.mousePos = [200, 200];
+    this.mousePos = settings.mousePos || [200, 200];
     this.direction = [0, 0];
     this.health = 10;
     this.background = settings.background;
@@ -626,25 +623,25 @@ class Tank extends __WEBPACK_IMPORTED_MODULE_0__moving_object__["a" /* default *
   }
 
   power(direction) {
-    if (Math.abs(this.vel[0]) <= 1.5 || Math.abs(this.vel[1] <= 1.5)) {
+    if (Math.abs(this.vel[0]) <= 2 || Math.abs(this.vel[1] <= 2)) {
       this.vel[0] += Math.sqrt(Math.pow(direction[0], 2) + Math.pow(this.vel[1], 2)) * direction[0] / 2;
       this.vel[1] += Math.sqrt(Math.pow(direction[1], 2) + Math.pow(this.vel[0], 2)) * direction[1] / 2;
     }
 
-    if (this.vel[0] > 1.5) {
-      this.vel[0] = 1.5;
+    if (this.vel[0] > 2) {
+      this.vel[0] = 2;
     }
 
-    if (this.vel[0] < -1.5) {
-      this.vel[0] = -1.5;
+    if (this.vel[0] < -2) {
+      this.vel[0] = -2;
     }
 
-    if (this.vel[1] > 1.5) {
-      this.vel[1] = 1.5;
+    if (this.vel[1] > 2) {
+      this.vel[1] = 2;
     }
 
-    if (this.vel[1] < -1.5) {
-      this.vel[1] = -1.5;
+    if (this.vel[1] < -2) {
+      this.vel[1] = -2;
     }
   }
 
@@ -677,15 +674,15 @@ class GameView {
     this.gameCanvas = gameCanvas;
     this.tank = this.game.tanks[0];
     this.keys = {
-      37: {down:false, action:() => this.tank.power([-1.5, 0])},
-      38: {down:false, action:() => this.tank.power([0, -1.5])},
-      39: {down:false, action:() => this.tank.power([1.5, 0])},
-      40: {down:false, action:() => this.tank.power([0, 1.5])},
+      37: {down:false, action:() => this.tank.power([-2, 0])},
+      38: {down:false, action:() => this.tank.power([0, -2])},
+      39: {down:false, action:() => this.tank.power([2, 0])},
+      40: {down:false, action:() => this.tank.power([0, 2])},
 
-      65: {down:false, action:() => this.tank.power([-1.5, 0])},
-      68: {down:false, action:() => this.tank.power([1.5, 0])},
-      83: {down:false, action:() => this.tank.power([0, 1.5])},
-      87: {down:false, action:() => this.tank.power([0, -1.5])},
+      65: {down:false, action:() => this.tank.power([-2, 0])},
+      68: {down:false, action:() => this.tank.power([2, 0])},
+      83: {down:false, action:() => this.tank.power([0, 2])},
+      87: {down:false, action:() => this.tank.power([0, -2])},
     };
   }
 
@@ -712,7 +709,6 @@ class GameView {
     const tanks = this.game.tanks;
 
     for (let i = 1; i < tanks.length; i++) {
-
       setInterval(() => {
         tanks[i].mousePos = [tanks[0].pos[0] + 80, tanks[0].pos[1] + 80];
       }, 3000);
