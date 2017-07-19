@@ -700,7 +700,9 @@ class GameView {
 
     for (let i = 1; i < tanks.length; i++) {
       setInterval(() => {
-        tanks[i].fireBullet();
+        if (tanks[i]) {
+          tanks[i].fireBullet();
+        }
       }, (1000 * Math.random() + 300));
     }
   }
@@ -710,7 +712,9 @@ class GameView {
 
     for (let i = 1; i < tanks.length; i++) {
       setInterval(() => {
-        tanks[i].mousePos = [tanks[0].pos[0] + 80, tanks[0].pos[1] + 80];
+        if (tanks[i]) {
+          tanks[i].mousePos = [tanks[0].pos[0] + 80, tanks[0].pos[1] + 80];
+        }
       }, 3000);
     }
   }
